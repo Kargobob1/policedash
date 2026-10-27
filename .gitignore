@@ -1,0 +1,12 @@
+# IDE
+.idea/
+*.iml
+
+# Build output (ZIP is attached to GitHub releases)
+dist/
+
+# Runtime data
+logs/*
+!logs/README.md
+recordings/*
+!recordings/README.md

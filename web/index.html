@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>PoliceDash</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Bild-im-Bild: Vollbild-Kopie der Spielersicht (pip.js) + Monitor mit Dashcam -->
+    <canvas id="pip-canvas" class="hidden"></canvas>
+    <div id="pip-mask" class="hidden"></div>
+    <div id="pip-monitor" class="hidden">
+        <div class="pm-screen" id="pip-screen">
+            <canvas id="pm-still"></canvas>   <!-- letztes Dashcam-Bild im Standby -->
+        </div>
+        <div class="pm-stats hidden" id="pip-stats"></div>
+    </div>
+
+    <!-- Vollbild-Dashcam: Container fuer das OSD -->
+    <div id="osd-full" class="hidden"></div>
+
+    <!-- OSD (osd.js); app.js haengt es in #osd-full oder #pip-screen -->
+    <canvas id="osd-canvas" class="hidden"></canvas>
+
+    <!-- Ergebnis-Karte nach einer Messung -->
+    <div id="result" class="hidden">
+        <div class="res-status" id="res-status"></div>
+        <div class="res-meta" id="res-meta"></div>
+        <div class="res-meta" id="res-id"></div>
+        <div class="res-reason hidden" id="res-reason"></div>
+        <dl class="res-values" id="res-values">
+            <dt data-locale="res_measured"></dt><dd id="res-measured"></dd>
+            <dt data-locale="res_tolerance"></dt><dd id="res-tolerance"></dd>
+            <dt class="res-main" data-locale="res_chargeable"></dt><dd class="res-main" id="res-chargeable"></dd>
+            <dt data-locale="res_duration"></dt><dd id="res-duration"></dd>
+            <dt data-locale="res_distance"></dt><dd id="res-distance"></dd>
+        </dl>
+    </div>
+
+    <!-- Wiedergabe eines Messvideos (Abruf per Messnummer / Vorfuehren) -->
+    <div id="player" class="hidden">
+        <div class="pl-head">
+            <span class="pl-title" id="pl-title"></span>
+            <span class="pl-hint" data-locale="play_close_hint"></span>
+        </div>
+        <div class="pl-screen">
+            <video id="pl-video" autoplay muted playsinline></video>
+            <div class="pl-loading hidden" id="pl-loading"></div>
+        </div>
+        <div class="pl-body">
+            <canvas class="pl-map hidden" id="pl-map" width="480" height="300"></canvas>
+            <dl class="pl-data" id="pl-data"></dl>
+        </div>
+    </div>
+
+    <!-- Bedienteil -->
+    <div id="panel" class="hidden">
+        <div class="pn-head">
+            <span class="pn-brand" data-locale="title"></span>
+            <span class="pn-badge">Alpha</span>
+            <span class="pn-leds">
+                <span class="pn-led" id="led-cam" data-locale-title="st_cam"></span>
+                <span class="pn-led" id="led-measure" data-locale-title="st_measure"></span>
+            </span>
+        </div>
+
+        <div class="pn-screen">
+            <div class="pn-tabs" role="tablist">
+                <button class="pn-tab active" data-tab="status" data-locale="tab_status"></button>
+                <button class="pn-tab" data-tab="history" data-locale="tab_history"></button>
+                <button class="pn-tab" data-tab="settings" data-locale="tab_settings"></button>
+            </div>
+
+            <div class="pn-view" id="view-status">
+                <dl class="pn-kv">
+                    <dt data-locale="st_cam"></dt><dd id="st-cam">-</dd>
+                    <dt data-locale="st_mode"></dt><dd id="st-mode">-</dd>
+                    <dt data-locale="st_target"></dt><dd id="st-target">-</dd>
+                    <dt data-locale="st_measure"></dt><dd id="st-measure">-</dd>
+                    <dt data-locale="st_last"></dt><dd id="st-last">-</dd>
+                </dl>
+            </div>
+
+            <div class="pn-view hidden" id="view-history">
+                <ul class="pn-list" id="hist-list"></ul>
+                <div class="pn-empty hidden" id="hist-empty" data-locale="hist_empty"></div>
+                <div class="hidden" id="hist-detail">
+                    <button class="pn-link" id="hist-back" data-locale="hist_back"></button>
+                    <div class="pn-detail-title" id="hd-title"></div>
+                    <dl class="pn-kv" id="hd-values"></dl>
+                    <canvas class="pn-map hidden" id="hd-map" width="480" height="260"></canvas>
+                    <div class="pn-actions hidden" id="hd-actions">
+                        <button class="pn-action" id="hd-view" data-locale="btn_view"></button>
+                        <button class="pn-action" id="hd-show" data-locale="btn_show"></button>
+                    </div>
+                    <div id="hd-image"></div>
+                </div>
+            </div>
+
+            <div class="pn-view hidden" id="view-settings">
+                <div class="pn-setting">
+                    <span data-locale="set_scale"></span>
+                    <input type="range" id="set-scale" min="0.6" max="1.6" step="0.1">
+                    <span id="set-scale-value"></span>
+                </div>
+                <div class="pn-setting pn-setting-range">
+                    <span data-locale="set_dash_fps"></span>
+                    <input type="range" id="set-dashfps" min="10" max="24" step="1">
+                    <span id="set-dashfps-value"></span>
+                </div>
+                <div class="pn-setting">
+                    <span data-locale="set_theme"></span>
+                    <span class="pn-choice" data-setting="theme">
+                        <button data-value="white" data-locale="set_theme_white"></button>
+                        <button data-value="green" data-locale="set_theme_green"></button>
+                    </span>
+                </div>
+                <div class="pn-setting">
+                    <span data-locale="set_sounds"></span>
+                    <span class="pn-choice" data-setting="sounds">
+                        <button data-value="true" data-locale="st_on"></button>
+                        <button data-value="false" data-locale="st_off"></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pn-keys">
+            <button class="pn-key" data-action="toggleCam" data-locale="btn_cam"></button>
+            <button class="pn-key" data-action="mode" data-locale="btn_mode"></button>
+            <button class="pn-key" data-action="lock" data-locale="btn_lock"></button>
+            <button class="pn-key pn-key-main" data-action="startStop" data-locale="btn_start"></button>
+            <button class="pn-key" data-action="reset" data-locale="btn_reset"></button>
+            <button class="pn-key" data-action="photo" data-locale="btn_photo"></button>
+        </div>
+
+        <div class="pn-hint" data-locale="panel_close_hint"></div>
+    </div>
+
+    <!-- Notifications (Fallback ohne ox_lib) -->
+    <div id="notifications"></div>
+
+    <script src="osd.js"></script>
+    <script src="trackmap.js"></script>
+    <script src="pip.js"></script>
+    <script src="recorder.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

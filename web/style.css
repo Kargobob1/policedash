@@ -1,0 +1,621 @@
+/* Theme-Variablen: weiss/schwarz (Default), gruen/schwarz per data-theme="green" */
+:root {
+    --scale: 1;
+    --fg: #f2f2f2;
+    --fg-dim: #9a9a9a;
+    --bg: rgba(0, 0, 0, 0.82);
+    --border: rgba(255, 255, 255, 0.25);
+    --accent: #ff3b30;
+    --success: #f2f2f2;
+    --error: #ff6b5e;
+    --warning: #ffd25e;
+    --font: 'Consolas', 'Lucida Console', 'Courier New', monospace;
+}
+
+[data-theme="green"] {
+    --fg: #39ff6a;
+    --fg-dim: #1f9c41;
+    --border: rgba(57, 255, 106, 0.3);
+    --success: #39ff6a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--font);
+    color: var(--fg);
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Spielbild-Kopie fuer Bild-im-Bild (pip.js) */
+/* Groesse setzt pip.js: Bildschirm + unsichtbarer Aufnahmestreifen darunter (body ist overflow: hidden) */
+#pip-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* deckt die Farbmarke oben links ab */
+#pip-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.9vw;   /* Marke + Diagnose-Zaehler */
+    height: 1.6vh;
+    background: #000;
+}
+
+/* Monitor (Bild-im-Bild), 4:3 wie ein Dashcam-Videobild */
+#pip-monitor {
+    position: absolute;
+    right: calc(24px * var(--scale));
+    bottom: calc(24px * var(--scale));
+    width: calc(30vw * var(--scale));
+}
+
+/* Innenflaeche durchsichtig: dort zeichnet pip.js die Dashcam ins Canvas darunter.
+   Der Rahmen ist ein echter border, damit pip.js die Innenflaeche exakt kennt. */
+.pm-screen {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: calc(8px * var(--scale)) solid #111214;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* Farbmarke des Dashcam-Frames in der Monitor-Ecke abdecken */
+.pm-screen::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 2%;
+    height: 2%;
+    min-width: 8px;
+    min-height: 4px;
+    background: #000;
+}
+
+.pm-stats {
+    margin-top: 0.3em;
+    padding: 0.2em 0.5em;
+    background: #111214;
+    color: #9a9a9a;
+    font-size: calc(11px * var(--scale));
+}
+
+/* OSD (osd.js): Vollbild bei der Dashcam, im Monitor bei Bild-im-Bild */
+#osd-full {
+    position: absolute;
+    inset: 0;
+}
+
+#osd-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Ergebnis-Karte bei Bild-im-Bild ueber den Monitor schieben */
+.device-pip #result {
+    bottom: calc((24px + 22.5vw + 40px) * var(--scale));
+}
+
+/* Ergebnis-Karte */
+#result {
+    position: absolute;
+    right: calc(24px * var(--scale));
+    bottom: calc(90px * var(--scale));
+    min-width: calc(300px * var(--scale));
+    padding: calc(14px * var(--scale)) calc(18px * var(--scale));
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-size: calc(15px * var(--scale));
+    font-variant-numeric: tabular-nums;
+    animation: notify-in 0.2s ease-out;
+}
+
+.res-status {
+    font-weight: bold;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+#result.invalid .res-status {
+    color: var(--error);
+}
+
+.res-meta {
+    margin-top: 0.3em;
+    color: var(--fg-dim);
+    font-size: 0.85em;
+}
+
+.res-reason {
+    margin-top: 0.8em;
+}
+
+.res-values {
+    display: grid;
+    grid-template-columns: auto auto;
+    row-gap: 0.3em;   /* keine Spaltenluecke, damit die Trennlinie durchgeht */
+    margin-top: 0.8em;
+}
+
+.res-values dt {
+    color: var(--fg-dim);
+}
+
+.res-values dd {
+    padding-left: 1.5em;
+    text-align: right;
+}
+
+.res-values .res-main {
+    padding-top: 0.3em;
+    border-top: 1px solid var(--border);
+    color: var(--fg);
+    font-weight: bold;
+}
+
+dd.res-main {
+    font-size: 1.4em;
+}
+
+/* Bedienteil: Steuerblock mit eingelassenem Display und mechanischen Tasten */
+#panel {
+    --housing: #232427;
+    --housing-edge: #111214;
+    --key: #3a3c40;
+    --key-top: #4a4c51;
+    --key-text: #e6e6e6;
+    --screen: #0b0c0d;
+
+    position: absolute;
+    left: calc(24px * var(--scale));
+    bottom: calc(90px * var(--scale));
+    width: calc(380px * var(--scale));
+    padding: 0.9em;
+    background: linear-gradient(180deg, #2b2c30, var(--housing));
+    border: 1px solid var(--housing-edge);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    font-size: calc(13px * var(--scale));
+    color: var(--key-text);
+    animation: panel-in 0.18s ease-out;
+}
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#panel button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pn-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.2em 0.6em;
+}
+
+.pn-brand {
+    font-weight: bold;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #b9b9b9;
+}
+
+.pn-badge {
+    margin-left: 0.6em;
+    margin-right: auto;
+    padding: 0.05em 0.45em;
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    font-size: 0.75em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.pn-leds {
+    display: flex;
+    gap: 0.6em;
+}
+
+.pn-led {
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    background: #3b3b3b;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+#led-cam.on     { background: #4cd964; }
+#led-measure.on { background: var(--accent); }
+
+/* Display */
+.pn-screen {
+    min-height: 13em;
+    padding: 0.7em 0.8em;
+    background: var(--screen);
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+}
+
+.pn-tabs {
+    display: flex;
+    gap: 0.3em;
+    margin-bottom: 0.7em;
+    border-bottom: 1px solid var(--border);
+}
+
+#panel .pn-tab {
+    padding: 0.25em 0.6em;
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.85em;
+}
+
+#panel .pn-tab.active {
+    background: var(--fg);
+    color: var(--screen);
+}
+
+.pn-kv {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    row-gap: 0.35em;
+}
+
+.pn-kv dt {
+    color: var(--fg-dim);
+}
+
+.pn-kv dd {
+    padding-left: 1.2em;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pn-list {
+    list-style: none;
+    max-height: 11em;
+    overflow-y: auto;
+}
+
+#panel .pn-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.8em;
+    width: 100%;
+    padding: 0.3em 0.2em;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--fg);
+    text-align: left;
+}
+
+#panel .pn-row:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.pn-row-sub {
+    color: var(--fg-dim);
+}
+
+.pn-empty {
+    color: var(--fg-dim);
+    padding: 1em 0;
+    text-align: center;
+}
+
+#panel .pn-link {
+    margin-bottom: 0.5em;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+}
+
+.pn-detail-title {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.pn-image {
+    display: block;
+    width: 100%;
+    margin-top: 0.6em;
+    border: 1px solid var(--border);
+}
+
+.pn-setting {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.35em 0;
+}
+
+.pn-setting:first-child {
+    grid-template-columns: 1fr 8em 2.5em;
+}
+
+.pn-setting input[type="range"] {
+    width: 100%;
+    accent-color: var(--fg);
+}
+
+#set-scale-value {
+    text-align: right;
+}
+
+.pn-choice {
+    display: flex;
+    border: 1px solid var(--border);
+}
+
+#panel .pn-choice button {
+    padding: 0.15em 0.6em;
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+}
+
+#panel .pn-choice button.active {
+    background: var(--fg);
+    color: var(--screen);
+}
+
+/* Tasten */
+.pn-keys {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.55em;
+    margin-top: 0.9em;
+}
+
+#panel .pn-key {
+    padding: 0.75em 0.3em;
+    background: linear-gradient(180deg, var(--key-top), var(--key));
+    border: 1px solid var(--housing-edge);
+    border-radius: 5px;
+    box-shadow: 0 3px 0 var(--housing-edge), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    font-size: 0.85em;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 0.06s, box-shadow 0.06s;
+}
+
+#panel .pn-key:hover {
+    background: linear-gradient(180deg, #55575c, var(--key-top));
+}
+
+#panel .pn-key:active,
+#panel .pn-key.pressed {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 var(--housing-edge), inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+#panel .pn-key-main {
+    background: linear-gradient(180deg, #e9e9e9, #c9c9c9);
+    color: #151515;
+}
+
+#panel .pn-key-main:hover {
+    background: linear-gradient(180deg, #f5f5f5, #d6d6d6);
+}
+
+.pn-hint {
+    margin-top: 0.8em;
+    color: #8a8a8a;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+/* Notifications */
+#notifications {
+    position: absolute;
+    top: 4vh;
+    right: 2vw;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: calc(320px * var(--scale));
+}
+
+.notify {
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-size: calc(13px * var(--scale));
+    animation: notify-in 0.2s ease-out;
+}
+
+/* Typ nur ueber die Textfarbe, passend zum nuechternen Display-Look */
+.notify.success { color: var(--success); }
+.notify.error   { color: var(--error); }
+.notify.warning { color: var(--warning); }
+
+.notify.out {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+@keyframes notify-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Videowiedergabe (Abruf per Messnummer / Vorfuehren) */
+#player {
+    position: absolute;
+    top: 6vh;
+    left: 50%;
+    width: calc(34vw * var(--scale));
+    transform: translateX(-50%);
+    padding: 0.7em;
+    background: #111214;
+    border: 1px solid #000;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    font-size: calc(13px * var(--scale));
+    color: #e6e6e6;
+}
+
+.pl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5em;
+}
+
+.pl-title {
+    font-weight: bold;
+    letter-spacing: 0.08em;
+}
+
+.pl-hint {
+    color: #8a8a8a;
+    font-size: 0.85em;
+}
+
+.pl-screen {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: #000;
+}
+
+#pl-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.pl-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9a9a9a;
+}
+
+.pl-data {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3em 1em;
+    margin-top: 0.6em;
+    font-variant-numeric: tabular-nums;
+}
+
+.pl-data dt {
+    color: #8a8a8a;
+}
+
+.pl-data dd.pl-main {
+    font-weight: bold;
+}
+
+/* Bedienteil: Wiedergabe-Aktionen in der Historie */
+.pn-actions {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 0.6em;
+}
+
+#panel .pn-action {
+    flex: 1;
+    padding: 0.3em 0.5em;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--fg);
+}
+
+#panel .pn-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Bild-im-Bild im Standby: kein Live-Bild, der Monitor zeigt das letzte Dashcam-Bild */
+#pm-still {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#pip-monitor.standby .pm-screen {
+    background: #050505;
+}
+
+#pip-monitor.standby #pm-still {
+    display: block;
+    filter: grayscale(0.35) brightness(0.8);
+}
+
+/* weitere Schieberegler im Setup wie "Groesse" */
+.pn-setting.pn-setting-range {
+    grid-template-columns: 1fr 8em 2.5em;
+}
+
+#set-dashfps-value {
+    text-align: right;
+}
+
+/* Mini-Map neben den Messdaten im Videofenster, unter den Werten in der Historie */
+.pl-body {
+    display: flex;
+    gap: 0.8em;
+    align-items: flex-start;
+}
+
+.pl-body .pl-data {
+    flex: 1;
+}
+
+.pl-map {
+    width: 52%;
+    height: auto;
+    margin-top: 0.6em;
+    border: 1px solid #000;
+}
+
+.pn-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 0.6em;
+    border: 1px solid var(--border);
+}

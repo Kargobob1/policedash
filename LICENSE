@@ -1,0 +1,42 @@
+PoliceDash License
+Copyright (c) 2026 Kargobob1/Excurse (https://github.com/Kargobob1/policedash)
+
+Permission is granted, free of charge, to any person obtaining a copy of this
+software and associated files (the "Software") to use, copy, modify and
+run the Software, including on monetized game servers, subject to the
+following conditions:
+
+1. Credit required. Anyone who uses the Software, modified or unmodified,
+   on a server or in a project that is accessible to others must give
+   visible credit with the following text, or an equivalent one that names
+   the same author and link:
+
+       PoliceDash by Kargobob1/Excurse - https://github.com/Kargobob1/policedash
+
+   The credit must appear where the server or project lists its credits or
+   the scripts it uses, for example a credits page, website, Discord server
+   or forum post. In-game names and branding may be changed.
+
+2. No resale. The Software, modified or unmodified, may not be sold,
+   licensed for a fee, put behind a paywall, bundled into paid packages or
+   otherwise distributed in exchange for payment or other compensation.
+
+3. Free redistribution only. Copies and modified versions may be shared
+   publicly, provided they are offered free of charge, include this license,
+   keep the original copyright notice and keep the credit from condition 1.
+
+4. Modified versions must state that they were changed and must not be
+   presented as the original work.
+
+5. Names and trademarks. This license grants no rights to the names
+   "PoliceDash" and "PolDash" or to any third-party trademarks. Product names
+   of real-world speed measurement systems belong to their respective owners;
+   this project is not affiliated with or endorsed by any of them.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
